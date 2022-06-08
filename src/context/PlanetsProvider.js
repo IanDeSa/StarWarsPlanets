@@ -4,6 +4,8 @@ import planetsContext from './PlanetsContext';
 
 function PlanetsProvider({ children }) {
   const [data, setData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
+  const [filterByName, setFilterByName] = useState({ name: '' });
 
   useEffect(() => {
     const fetchPlanets = async () => {
@@ -12,6 +14,7 @@ function PlanetsProvider({ children }) {
         const response = await fetch(URL);
         const { results } = await response.json();
         setData(results);
+        setFilteredData(results);
       } catch (error) {
         console.log(error);
       }
@@ -19,8 +22,20 @@ function PlanetsProvider({ children }) {
     fetchPlanets();
   }, []);
 
+  useEffect(() => {
+    const filteredPlanets = data.filter((planet) => (
+      planet.name.toLowerCase().includes(filterByName.name)));
+    setFilteredData(filteredPlanets);
+  }, [filterByName]);
+
+  const handlePlanetName = ({ target }) => {
+    setFilterByName({ name: target.value.toLowerCase() });
+  };
+
   const contextValue = {
     data,
+    filteredData,
+    handlePlanetName,
   };
 
   return (
