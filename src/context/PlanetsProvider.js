@@ -13,7 +13,7 @@ function PlanetsProvider({ children }) {
         const { results } = await response.json();
         setData(results);
       } catch (error) {
-        return error;
+        console.log(error);
       }
     };
     fetchPlanets();
