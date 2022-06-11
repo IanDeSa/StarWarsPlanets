@@ -13,6 +13,14 @@ function Forms() {
     setValue,
     handleClickNumericFilter,
     optionsColumn,
+    filterByNumericValues,
+    deleteFilterNumeric,
+    removeAllFilters,
+    initalOptions,
+    columnOrder,
+    setColumnOrder,
+    setRadioOrder,
+    handleClickSort,
   } = useContext(planetsContext);
 
   return (
@@ -72,6 +80,78 @@ function Forms() {
         >
           Filtrar
         </button>
+        <label htmlFor="dropdown-column-sort">
+          Ordenar
+          <select
+            data-testid="column-sort"
+            id="dropdown-column-sort"
+            value={ columnOrder }
+            onChange={ ({ target }) => setColumnOrder(target.value) }
+          >
+            {
+              initalOptions.map((option) => (
+                <option key={ option }>{option}</option>
+              ))
+            }
+          </select>
+          <label htmlFor="input-radio-asc">
+            <input
+              data-testid="column-sort-input-asc"
+              id="input-radio-asc"
+              type="radio"
+              name="radio-sort"
+              value="ASC"
+              onChange={ ({ target }) => setRadioOrder(target.value) }
+            />
+            Ascendente
+
+          </label>
+          <label htmlFor="input-radio-desc">
+            <input
+              data-testid="column-sort-input-desc"
+              id="input-radio-desc"
+              type="radio"
+              name="radio-sort"
+              value="DESC"
+              onChange={ ({ target }) => setRadioOrder(target.value) }
+            />
+            Descendente
+
+          </label>
+        </label>
+        <button
+          type="button"
+          data-testid="column-sort-button"
+          onClick={ handleClickSort }
+        >
+          Ordenar
+        </button>
+        <button
+          type="button"
+          data-testid="button-remove-filters"
+          onClick={ removeAllFilters }
+        >
+          Remover Filtros
+        </button>
+        <section>
+          {
+            filterByNumericValues.map((filter) => (
+              <div data-testid="filter" key={ `${filter.column}-${filter.value}` }>
+                <span>
+                  {`${filter.column} ${filter.comparison} ${filter.value}`}
+                </span>
+                <button
+                  type="button"
+                  name={ filter.column }
+                  onClick={ ({ target }) => deleteFilterNumeric(target.name) }
+                >
+                  ❌
+                </button>
+              </div>
+
+            ))
+          }
+        </section>
         <Table />
       </form>
     </main>

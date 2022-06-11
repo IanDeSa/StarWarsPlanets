@@ -3,6 +3,9 @@ import PropTypes from 'prop-types';
 import planetsContext from './PlanetsContext';
 
 const MAGIC_NUMBER = -1;
+const initalOptions = [
+  'population', 'orbital_period', 'diameter', 'rotation_period', 'surface_water',
+];
 
 function PlanetsProvider({ children }) {
   const [data, setData] = useState([]);
@@ -11,10 +14,14 @@ function PlanetsProvider({ children }) {
   const [column, setColumn] = useState('population');
   const [comparison, setComparison] = useState('maior que');
   const [value, setValue] = useState('0');
-  const [optionsColumn, setOptionsColumn] = useState([
-    'population', 'orbital_period', 'diameter', 'rotation_period', 'surface_water',
-  ]);
+  const [optionsColumn, setOptionsColumn] = useState(initalOptions);
   const [filterByNumericValues, setFilterByNumericValues] = useState([]);
+  const [columnOrder, setColumnOrder] = useState('population');
+  const [radioOrder, setRadioOrder] = useState('ASC');
+  const [order, setOrder] = useState({
+    column: 'population',
+    sort: 'ASC',
+  });
 
   useEffect(() => {
     const fetchPlanets = async () => {
@@ -62,11 +69,29 @@ function PlanetsProvider({ children }) {
         }
       }), filteredPlanets);
     setFilteredData(filteredByNumericFilters);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterByName, filterByNumericValues]);
 
   useEffect(() => {
-    setColumn(optionsColumn[0]);
+    if (column !== undefined) {
+      setColumn(optionsColumn[0]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [optionsColumn]);
+
+  useEffect(() => {
+    const ascSorted = [...filteredData]
+      .filter((asc) => !asc[order.column].includes('unknown'));
+    const unknownPlanets = [...filteredData]
+      .filter((asc) => asc[order.column].includes('unknown'));
+    if (order.sort === 'ASC') {
+      ascSorted.sort((a, b) => a[order.column] - b[order.column]);
+    } else if (order.sort === 'DESC') {
+      ascSorted.sort((a, b) => b[order.column] - a[order.column]);
+    }
+    setFilteredData([...ascSorted, ...unknownPlanets]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [order]);
 
   const handlePlanetName = ({ target }) => {
     setFilterByName({ name: target.value.toLowerCase() });
@@ -83,6 +108,27 @@ function PlanetsProvider({ children }) {
     setFilterByNumericValues([...filterByNumericValues, newFilterByNumericValues]);
   };
 
+  const deleteFilterNumeric = (fname) => {
+    const newFilters = filterByNumericValues.filter((filter) => (
+      filter.column !== fname
+    ));
+    setFilterByNumericValues(newFilters);
+    optionsColumn.push(fname);
+    if (column === undefined) {
+      setColumn(fname);
+    }
+  };
+
+  const removeAllFilters = () => {
+    setFilterByNumericValues([]);
+    setOptionsColumn(initalOptions);
+    setColumn('population');
+  };
+
+  const handleClickSort = () => {
+    setOrder({ column: columnOrder, sort: radioOrder });
+  };
+
   const contextValue = {
     data,
     filteredData,
@@ -95,6 +141,14 @@ function PlanetsProvider({ children }) {
     setValue,
     handleClickNumericFilter,
     optionsColumn,
+    filterByNumericValues,
+    deleteFilterNumeric,
+    removeAllFilters,
+    initalOptions,
+    columnOrder,
+    setColumnOrder,
+    setRadioOrder,
+    handleClickSort,
   };
 
   return (
