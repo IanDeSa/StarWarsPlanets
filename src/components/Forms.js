@@ -1,5 +1,8 @@
 import React, { useContext } from 'react';
 import planetsContext from '../context/PlanetsContext';
+import {
+  DivForms, DivInputNameLabel, Form, LabelSelect, Button, DivOrder, DivFilters,
+} from '../style/FormsStyles';
 import Table from './Table';
 
 function Forms() {
@@ -24,23 +27,25 @@ function Forms() {
   } = useContext(planetsContext);
 
   return (
-    <main>
-      <h2>Forms</h2>
-      <form>
+    <DivForms>
+      <DivInputNameLabel>
+        <h2>Projeto Star Wars - Trybe</h2>
         <label htmlFor="input-planet-name">
+          Planet Name
           <input
             data-testid="name-filter"
             type="text"
             id="input-planet-name"
-            placeholder="Planet Name"
             onChange={ handlePlanetName }
           />
         </label>
-        <label htmlFor="select-column-filter">
-          Column
+      </DivInputNameLabel>
+      <Form>
+        <LabelSelect htmlFor="select-column">
+          Coluna
           <select
             data-testid="column-filter"
-            id="select-column-filter"
+            id="select-column"
             value={ column }
             onChange={ ({ target }) => setColumn(target.value) }
           >
@@ -50,12 +55,12 @@ function Forms() {
               ))
             }
           </select>
-        </label>
-        <label htmlFor="select-comparison-filter">
-          Operator
+        </LabelSelect>
+        <LabelSelect htmlFor="select-operator">
+          Operador
           <select
             data-testid="comparison-filter"
-            id="select-comparison-filter"
+            id="select-operator"
             value={ comparison }
             onChange={ ({ target }) => setComparison(target.value) }
           >
@@ -63,24 +68,21 @@ function Forms() {
             <option>menor que</option>
             <option>igual a</option>
           </select>
-        </label>
-        <label htmlFor="input-value-filter">
-          <input
-            data-testid="value-filter"
-            id="input-value-filter"
-            type="number"
-            onChange={ ({ target }) => setValue(target.value) }
-            value={ value }
-          />
-        </label>
-        <button
+        </LabelSelect>
+        <input
+          data-testid="value-filter"
+          type="number"
+          onChange={ ({ target }) => setValue(target.value) }
+          value={ value }
+        />
+        <Button
           data-testid="button-filter"
           type="button"
           onClick={ handleClickNumericFilter }
         >
           Filtrar
-        </button>
-        <label htmlFor="dropdown-column-sort">
+        </Button>
+        <LabelSelect>
           Ordenar
           <select
             data-testid="column-sort"
@@ -94,6 +96,8 @@ function Forms() {
               ))
             }
           </select>
+        </LabelSelect>
+        <DivOrder>
           <label htmlFor="input-radio-asc">
             <input
               data-testid="column-sort-input-asc"
@@ -101,10 +105,10 @@ function Forms() {
               type="radio"
               name="radio-sort"
               value="ASC"
+              checked
               onChange={ ({ target }) => setRadioOrder(target.value) }
             />
             Ascendente
-
           </label>
           <label htmlFor="input-radio-desc">
             <input
@@ -116,45 +120,52 @@ function Forms() {
               onChange={ ({ target }) => setRadioOrder(target.value) }
             />
             Descendente
-
           </label>
-        </label>
-        <button
+        </DivOrder>
+        <Button
           type="button"
           data-testid="column-sort-button"
           onClick={ handleClickSort }
         >
           Ordenar
-        </button>
-        <button
-          type="button"
-          data-testid="button-remove-filters"
-          onClick={ removeAllFilters }
-        >
-          Remover Filtros
-        </button>
-        <section>
-          {
-            filterByNumericValues.map((filter) => (
-              <div data-testid="filter" key={ `${filter.column}-${filter.value}` }>
-                <span>
-                  {`${filter.column} ${filter.comparison} ${filter.value}`}
-                </span>
-                <button
-                  type="button"
-                  name={ filter.column }
-                  onClick={ ({ target }) => deleteFilterNumeric(target.name) }
-                >
-                  ❌
-                </button>
-              </div>
-
-            ))
-          }
-        </section>
-        <Table />
-      </form>
-    </main>
+        </Button>
+        {
+          filterByNumericValues.length > 0 && (
+            <Button
+              type="button"
+              data-testid="button-remove-filters"
+              onClick={ removeAllFilters }
+            >
+              Remover Filtros
+            </Button>
+          )
+        }
+      </Form>
+      <DivFilters>
+        <p>Filtros</p>
+        {filterByNumericValues.map((filter) => (
+          <div
+            data-testid="filter"
+            key={ `${filter.column}-${filter.value}` }
+          >
+            <label htmlFor="remove-filter">
+              <span>
+                {`${filter.column} ${filter.comparison} ${filter.value}`}
+              </span>
+              <button
+                type="button"
+                id="remove-filter"
+                name={ filter.column }
+                onClick={ ({ target }) => deleteFilterNumeric(target.name) }
+              >
+                ❌
+              </button>
+            </label>
+          </div>
+        ))}
+      </DivFilters>
+      <Table />
+    </DivForms>
   );
 }
 

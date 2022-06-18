@@ -1,13 +1,16 @@
 import React from 'react';
-import './App.css';
 import Forms from './components/Forms';
 import PlanetsProvider from './context/PlanetsProvider';
+import GlobalStyles from './style/GlobalStyles';
 
 function App() {
   return (
-    <PlanetsProvider>
-      <Forms />
-    </PlanetsProvider>
+    <main>
+      <GlobalStyles />
+      <PlanetsProvider>
+        <Forms />
+      </PlanetsProvider>
+    </main>
   );
 }
 
